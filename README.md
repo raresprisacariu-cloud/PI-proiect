@@ -1,4 +1,6 @@
 
+                                                    Brain Segmentation : segmentarea arterelor cerebrale
+
 | Nr. | Autor(i) / An | Titlul articolului / proiectului | Aplicație / Domeniu | Tehnologii utilizate | Metodologie / Abordare | Rezultate | Limitări | Comentarii suplimentare |
 |:---:|:---|:---|:---|:---|:---|:---|:---|:---|
 | 1 | Ronneberger, Fischer & Brox / 2015 | U-Net: Convolutional Networks for Biomedical Image Segmentation | Segmentare biomedicală generală | CNN, U-Net | Arhitectură encoder-decoder simetrică, cu conexiuni skip; antrenare end-to-end cu puține date anotate. | Performanțe ridicate în segmentarea structurilor biomedicale; rezultate raportate pe setul ISBI. | Arhitectură 2D, fără context volumetric; nu este proiectată specific pentru vase mici. | Arhitectură fundamentală pentru proiecte de segmentare medicală. |
