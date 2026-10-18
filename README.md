@@ -9,10 +9,25 @@
 | 4 | van Voorst et al. / 2026 | Deep generative models for vessel segmentation in CT angiography of the brain | Segmentarea vaselor cerebrale în CTA | GAN, CTA, filtru Frangi | Abordare semi-supervizată, cu GAN condiționat pentru traducerea CTA în NCCT și funcție de pierdere bazată pe filtrul Frangi 3D. | DSC = 0,74 pentru abordarea semi-supervizată, comparativ cu DSC = 0,78 pentru nnU-Net supervizat. | Necesită un set mare de imagini CTA neetichetate; performanță mai scăzută decât metoda supervizată în rezultatele raportate. | Abordare utilă pentru investigarea metodelor care reduc dependența de anotările manuale. |
 | 5 | Articol de analiză TOF-MRA / 2026 | Analysis of major segmentation models for intracranial artery time-of-flight magnetic resonance angiography images | Segmentarea arterelor intracraniene pe imagini TOF-MRA | TOF-MRA, U-Net, LinkNet, FPN, PSPNet, DeepLabV3+ | Compararea a 45 de combinații encoder-decoder (9 backbone-uri x 5 arhitecturi); analiză a stabilității folosind coeficientul de variație. | Evaluare pe patru seturi de date: in-house, CereVessMRA, IXI și ADAM; analiză a performanței și eficienței computaționale. | Limitările nu sunt precizate în informațiile furnizate. | Relevant pentru compararea arhitecturilor și justificarea alegerii modelului de segmentare. |
 
+
+![Schema Bloc Brain Vessel Segmentation](schema_bloc.png)
+
+
 Proiectul are ca obiectiv segmentarea automată a arterelor cerebrale din imagini medicale MRA 3D.   
 
-Componentele din Schema Bloc
-  Modulul 1: Ingestie & Structurare DateSet de date: Încarcă volumele MRA 3D în format NIfTI. Împărțire pe pacienți (80% Train / 10% Val / 10% Test): Separation-ul se realizează la nivel de pacient (nu de slice-uri) pentru a evita transmiterea de informații suprapuse între seturi (data leakage).  
-  Modulul 2: Preprocesare & Extragere 2DPreprocesare NIfTI: Elimină părțile irelevante (skull stripping – craniu, ochi), standardizează valorile intensităților între scannere și corectează neuniformitățile de câmp (bias field).   Extragere slice-uri 2D: Transformă fiecare volum 3D într-o serie de imagini 2D axiale independente (MRA) și măștile lor binare corespunzătoare.   Data Augmentation: Aplică transformări (rotații, zoom, zgomot gaussian) pe slice-urile de antrenare pentru a combate suprainvățarea (overfitting) și dezechilibrul de clase.   
-  Modulul 3: Model Deep Learning (U-Net 2D)Arhitectură: Model rețea neuronală convoluțională (CNN) de tip Encoder-Decoder cu legături de conexiune (skip connections).   Antrenare & Optimizare: Procesează imaginile 2D, extrage caracteristici la multiple scări și optimizează funcția de pierdere (Loss) pentru a distinge arterele de fundal.   
-  Modulul 4: Reconstrucție & EvaluareReconstrucție 3D: Stivuiește/reasamblează slice-urile 2D prezise înapoi în volumul 3D original al pacientului.   Evaluare Metrici: Calculează indicii de performanță (Dice Coefficient, IoU, Distanța Hausdorff, Recall, Precision) prin compararea volumului generat cu masca reală (ground truth).   Vizualizare: Afișează secțiunile vasculare și hărțile de segmentare (folosind Matplotlib).
+Descrierea componentelor din Schema Bloc:
+
+1.Input Date:
+Modulul responsabil cu achiziția și încărcarea volumelor 3D MRA în format NIfTI (.nii.gz). Aici se utilizează dataset-ul public TopCoW, care oferă imagini și adnotări de specialitate.
+
+2.Preprocesare:
+Pregătește datele brute pentru modelul de inteligență artificială. Include operațiuni critice precum eliminarea craniului, normalizarea intensității pixelilor și conversia volumelor 3D în felii 2D pentru a fi procesate de rețea.
+
+3.Model U-Net 2D:
+O rețea neuronală convoluțională cu arhitectură encoder-decoder, antrenată să recunoască modelele vizuale ale vaselor de sânge. Aceasta primește felile 2D și generează măști de segmentare (probabilitatea ca un pixel să facă parte dintr-un vas).
+
+4.Evaluare:
+Modulul care măsoară performanța modelului. Folosește metrici standard în imagistica medicală (precum Dice Coefficient și IoU) pentru a compara predicțiile modelului cu adnotările reale făcute de medici. O buclă de feedback permite reantrenarea modelului dacă rezultatele nu sunt satisfăcătoare.
+
+5.Output Final:
+Transformă rezultatele 2D înapoi într-un volum 3D complet. Acest modul generează hărțile vasculare finale, elimină zgomotul și produce vizualizările necesare pentru analiză clinică sau raportare.
